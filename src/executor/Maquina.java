@@ -20,10 +20,6 @@ public class Maquina {
         return memoria;
     }
 
-    /**
-     * Carrega um programa em HEX (cada linha = 3 bytes = 6 hex) a partir de um endereço em bytes.
-     * Exemplo de linha: "00100A".
-     */
     public void carregarProgramaHex(List<String> linhas, int enderecoInicialByte) {
         int addr = enderecoInicialByte;
 
@@ -39,18 +35,13 @@ public class Maquina {
         cpu.PC().setValor(enderecoInicialByte); // PC em bytes
     }
 
-    /**
-     * Executa UM passo da CPU (uma instrução).
-     * Use isso no botão "Step" da interface.
-     */
     public void passo() {
         int pc = cpu.PC().getValorUnsigned();
 
-        // 1) busca e decodifica
+        // busca e decodifica
         Instrucao inst = Instrucao.decodificar(memoria, pc);
         int proximoPC = (pc + inst.tamanhoBytes) & 0xFFFFFF;
 
-        // 2) executa
         executarInstrucao(inst, proximoPC);
     }
 
@@ -58,8 +49,6 @@ public class Maquina {
         int op = inst.opcode;
 
         switch (op) {
-            // ======== formato 3/4 (memória) =========
-
             case Opcode.LDA: {
                 int operando = lerOperandoMemoria(inst, proximoPC);
                 cpu.A().setValor(operando);
@@ -349,7 +338,7 @@ public class Maquina {
 
             case Opcode.SHIFTL: {
                 Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
-                int n = inst.r2 & 0x0F; // geralmente 0..15
+                int n = inst.r2 & 0x0F; 
                 if (r1 != null && n > 0) {
                     int v = r1.getValorUnsigned();
                     v = (v << n) & 0xFFFFFF; // mantém 24 bits
@@ -407,16 +396,12 @@ public class Maquina {
             }
 
             default:
-                // por enquanto, se cair aqui, não implementado
                 throw new UnsupportedOperationException(
-                    String.format("Opcode não implementado: 0x%02X", op)
+                    String.format("Opcode não existente: 0x%02X", op)
                 );
         }
     }
 
-    /**
-     * Calcula endereço efetivo (EA) para formato 3/4.
-     */
     private int calcularEnderecoEfetivo(Instrucao inst, int proximoPC) {
         if (inst.formato != 3 && inst.formato != 4) {
             throw new IllegalArgumentException("Endereço efetivo só para formatos 3/4.");
@@ -452,10 +437,6 @@ public class Maquina {
         return ea & 0xFFFFFF;
     }
 
-    /**
-     * Lê o OPERANDO para instruções de memória (LDA, ADD, COMP, etc.)
-     * Considera simples, imediato (#), indireto (@).
-     */
     private int lerOperandoMemoria(Instrucao inst, int proximoPC) {
         int ea = calcularEnderecoEfetivo(inst, proximoPC);
 
@@ -470,7 +451,7 @@ public class Maquina {
             int ptr = memoria.lerPalavraPorByte(ea);
             return memoria.lerPalavraPorByte(ptr);
         } else {
-            // caso estranho (0,0), trata como simples
+            // caso 0 e 0, trata como simples
             return memoria.lerPalavraPorByte(ea);
         }
     }

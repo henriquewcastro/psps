@@ -1,10 +1,5 @@
 package executor;
 
-/**
- * Memória da máquina SIC/XE.
- * Usa um vetor de bytes por baixo.
- * Tem acesso por palavra (índice de palavra) e por byte (endereço em bytes).
- */
 public class Memoria {
 
     private final byte[] dados;
@@ -25,8 +20,6 @@ public class Memoria {
     public int getTamanhoEmBytes() {
         return dados.length;
     }
-
-    // ========= ACESSO POR PALAVRA (índice de palavra) =============
 
     public int lerPalavra(int enderecoPalavra) {
         validarEnderecoPalavra(enderecoPalavra);
@@ -49,8 +42,6 @@ public class Memoria {
         dados[base + 2] = (byte) (valor & 0xFF);
     }
 
-    // ========= ACESSO POR BYTE (endereço em bytes) =============
-
     public int lerByte(int enderecoByte) {
         validarEnderecoByte(enderecoByte);
         return Byte.toUnsignedInt(dados[enderecoByte]);
@@ -61,10 +52,6 @@ public class Memoria {
         dados[enderecoByte] = (byte) (valor & 0xFF);
     }
 
-    /**
-     * Lê uma palavra (3 bytes) a partir de um endereço em bytes.
-     * NÃO precisa estar alinhado em múltiplo de 3.
-     */
     public int lerPalavraPorByte(int enderecoByte) {
         validarEnderecoByte(enderecoByte);
         validarEnderecoByte(enderecoByte + 2);
@@ -76,9 +63,6 @@ public class Memoria {
         return (b1 << 16) | (b2 << 8) | b3;
     }
 
-    /**
-     * Escreve uma palavra (3 bytes) a partir de um endereço em bytes.
-     */
     public void escreverPalavraPorByte(int enderecoByte, int valor) {
         validarEnderecoByte(enderecoByte);
         validarEnderecoByte(enderecoByte + 2);
@@ -89,8 +73,6 @@ public class Memoria {
         dados[enderecoByte + 1] = (byte) ((valor >> 8)  & 0xFF);
         dados[enderecoByte + 2] = (byte) (valor & 0xFF);
     }
-
-    // ========= VALIDAÇÃO =============
 
     private void validarEnderecoPalavra(int enderecoPalavra) {
         if (enderecoPalavra < 0 || enderecoPalavra >= numPalavras) {

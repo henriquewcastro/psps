@@ -1,11 +1,7 @@
 package executor;
 
-/**
- * OpCodes do SIC/XE conforme tabela do PDF do trabalho.
- */
 public interface Opcode {
 
-    // ===== Formato 3/4 – memória =====
     int LDA   = 0x00; // A ← (m..m+2)
     int LDX   = 0x04; // X ← (m..m+2)
     int LDL   = 0x08; // L ← (m..m+2)
@@ -39,7 +35,6 @@ public interface Opcode {
     int STT   = 0x84; // m..m+2 ← (T)
     int RSUB  = 0x4C; // PC ← L
 
-    // ===== Formato 2 – registrador–registrador / shifts =====
     int ADDR  = 0x90; // r2 ← r2 + r1
     int SUBR  = 0x94; // r2 ← r2 - r1
     int MULR  = 0x98; // r2 ← r2 * r1
