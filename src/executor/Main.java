@@ -7,10 +7,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        // === Caminho para o arquivo TXT ===
-        Path caminho = Paths.get("programa.txt");   // <-- coloque o arquivo na pasta raiz do projeto
+        Path caminho = Paths.get("programa.txt");
 
-        // === Lê todas as linhas e filtra vazias ===
+        //Lê todas as linhas e filtra vazias
         List<String> linhas = Files.readAllLines(caminho);
         List<String> programa = new ArrayList<>();
 
@@ -24,16 +23,13 @@ public class Main {
             }
         }
 
-        // === Inicializa a máquina ===
         Maquina maquina = new Maquina(4096);
 
-        // === Carrega o programa na memória a partir de 0x0000 ===
         maquina.carregarProgramaHex(programa, 0x0000);
 
         System.out.println("== PROGRAMA CARREGADO ==\n");
         imprimirEstado(maquina);
 
-        // === Executa cada instrução ===
         System.out.println("\n== EXECUÇÃO ==");
 
         for (int passo = 0; passo < programa.size(); passo++) {

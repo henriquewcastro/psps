@@ -5,9 +5,9 @@ public class Instrucao {
     public int opcode;       // 8 bits (com 2 LSB = 0)
     public int formato;      // 1, 2, 3 ou 4
     public int n, i, x, b, p, e;
-    public int disp;         // deslocamento já com sinal (formato 3) ou endereço (formato 4)
+    public int disp;         // deslocamento com sinal (formato 3) ou endereço (formato 4)
     public int r1, r2;       // formato 2
-    public int tamanhoBytes; // 1..4
+    public int tamanhoBytes;
 
     public static Instrucao decodificar(Memoria memoria, int pcByte) {
         Instrucao inst = new Instrucao();
@@ -34,7 +34,7 @@ public class Instrucao {
             return inst;
         }
 
-        // formato 3/4: precisamos dos próximos bytes
+        // formato 3/4
         int b2 = memoria.lerByte(pcByte + 1);
         int b3 = memoria.lerByte(pcByte + 2);
 
@@ -57,22 +57,17 @@ public class Instrucao {
             inst.disp = disp12;
             inst.tamanhoBytes = 3;
         } else {
-            // formato 4 – precisamos do 4º byte
+            // formato 4
             inst.formato = 4;
             int b4 = memoria.lerByte(pcByte + 3);
             int addr20 = ((b2 & 0x0F) << 16) | (b3 << 8) | b4;
-            inst.disp = addr20; // usamos disp como endereço direto
+            inst.disp = addr20; // disp como endereço direto
             inst.tamanhoBytes = 4;
         }
 
         return inst;
     }
 
-    /**
-     * Retorna o formato base da instrução com esse opcode:
-     * 1, 2 ou 3 (3 significa 3/4).
-     * Aqui colocamos só as que estamos usando.
-     */
     private static int getFormatoBase(int opcode) {
         switch (opcode) {
             // formato 3/4
@@ -103,7 +98,7 @@ public class Instrucao {
                 return 2;
 
             default:
-                return 3; // safe default
+                return 3;
         }
     }
 

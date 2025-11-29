@@ -12,17 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Interface gráfica do simulador SIC/XE.
- * - Mostra todos os registradores
- * - Mostra toda memória em bytes
- * - Permite executar passo a passo, executar tudo e reiniciar a execução
- */
 public class InterfaceSimulador extends JFrame {
 
     private final Maquina maquina;
     private final Path caminhoPrograma;
-    private final int totalInstrucoes; // número de linhas do arquivo (programa)
+    private final int totalInstrucoes;
 
     private final Map<String, JTextField> camposRegs = new LinkedHashMap<>();
     private final TabelaMemoriaModel modeloMemoria;
@@ -35,7 +29,6 @@ public class InterfaceSimulador extends JFrame {
         this.caminhoPrograma = caminhoPrograma;
         this.totalInstrucoes = programaOriginal.size();
 
-        // Carrega o programa na primeira vez (a partir do endereço 0)
         this.maquina.carregarProgramaHex(programaOriginal, 0x0000);
 
         this.modeloMemoria = new TabelaMemoriaModel(maquina.getMemoria());
@@ -62,7 +55,7 @@ public class InterfaceSimulador extends JFrame {
         add(painelBotoes, BorderLayout.SOUTH);
 
         setSize(900, 600);
-        setLocationRelativeTo(null); // centraliza na tela
+        setLocationRelativeTo(null);
     }
 
     // =========================
@@ -70,7 +63,7 @@ public class InterfaceSimulador extends JFrame {
     // =========================
 
     private JPanel criarPainelRegistradores() {
-        JPanel painel = new JPanel(new GridLayout(2, 4, 8, 4)); // 2 linhas, 4 colunas
+        JPanel painel = new JPanel(new GridLayout(2, 4, 8, 4));
 
         adicionarCampoReg(painel, "A");
         adicionarCampoReg(painel, "X");
@@ -79,7 +72,7 @@ public class InterfaceSimulador extends JFrame {
         adicionarCampoReg(painel, "S");
         adicionarCampoReg(painel, "T");
         adicionarCampoReg(painel, "PC");
-        adicionarCampoReg(painel, "CC"); // código de condição (vem de SW)
+        adicionarCampoReg(painel, "CC");
 
         return painel;
     }
@@ -142,7 +135,6 @@ public class InterfaceSimulador extends JFrame {
                 for (int i = 0; i < totalInstrucoes; i++) {
                     maquina.passo();
                     SwingUtilities.invokeLater(this::atualizarInterface);
-                    // Se não quiser “animação”, pode remover o sleep
                     Thread.sleep(5);
                 }
             } catch (Exception ex) {
@@ -292,7 +284,6 @@ public class InterfaceSimulador extends JFrame {
             }
         }
 
-        // Cria a máquina com, por exemplo, 4096 palavras (≈ 12 KB)
         Maquina maquina = new Maquina(4096);
 
         SwingUtilities.invokeLater(() -> {
