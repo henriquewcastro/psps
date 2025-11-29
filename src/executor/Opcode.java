@@ -45,7 +45,7 @@ public interface Opcode {
     int COMPR = 0xA0;
     int SHIFTL = 0xA4;
     int SHIFTR = 0xA8;
-    // RMO = 0xAC se quiser
+    int RMO = 0xAC;
     int CLEAR = 0xB4;
     int TIXR  = 0xB8;
 }

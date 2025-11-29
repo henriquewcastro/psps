@@ -372,7 +372,17 @@ public class Maquina {
                 break;
             }
 
-            // ======== formato 2 =========
+            case Opcode.RMO: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                Registrador r2 = cpu.getRegistradorPorCodigo(inst.r2);
+
+                if (r1 != null && r2 != null) {
+                    r2.setValor(r1.getValorUnsigned()); // copia mantendo 24 bits
+                }
+
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
 
             case Opcode.CLEAR: {
                 Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);

@@ -99,6 +99,7 @@ public class Instrucao {
             case Opcode.SHIFTL: case Opcode.SHIFTR:
             case Opcode.CLEAR:
             case Opcode.TIXR:
+            case Opcode.RMO:
                 return 2;
 
             default:
