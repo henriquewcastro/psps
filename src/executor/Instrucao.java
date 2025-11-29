@@ -76,27 +76,34 @@ public class Instrucao {
     private static int getFormatoBase(int opcode) {
         switch (opcode) {
             // formato 3/4
-            case Opcode.LDA:
-            case Opcode.STA:
-            case Opcode.ADD:
-            case Opcode.SUB:
+            case Opcode.LDA: case Opcode.LDX: case Opcode.LDL:
+            case Opcode.LDB: case Opcode.LDS: case Opcode.LDT:
+            case Opcode.LDCH:
+            case Opcode.STA: case Opcode.STX: case Opcode.STL:
+            case Opcode.STB: case Opcode.STS: case Opcode.STT:
+            case Opcode.STCH:
+            case Opcode.ADD: case Opcode.SUB:
+            case Opcode.MUL: case Opcode.DIV:
             case Opcode.COMP:
-            case Opcode.J:
-            case Opcode.JEQ:
+            case Opcode.AND: case Opcode.OR:
+            case Opcode.J: case Opcode.JEQ: case Opcode.JGT: case Opcode.JLT:
             case Opcode.JSUB:
             case Opcode.RSUB:
             case Opcode.TIX:
                 return 3;
 
             // formato 2
+            case Opcode.ADDR: case Opcode.SUBR:
+            case Opcode.MULR: case Opcode.DIVR:
+            case Opcode.COMPR:
+            case Opcode.SHIFTL: case Opcode.SHIFTR:
             case Opcode.CLEAR:
             case Opcode.TIXR:
                 return 2;
 
-            // se tivesse formato 1, colocaria aqui
             default:
-                // por padrão, assume 3/4
-                return 3;
+                return 3; // safe default
         }
     }
+
 }

@@ -96,10 +96,10 @@ public class CPU {
             case 3: return B();
             case 4: return S();
             case 5: return T();
-            // 6 seria F (float), que não usamos
-            // 8 seria PC, 9 seria SW em algumas tabelas – se quiser tratar
+            // 6 seria F; 8, PC; 9, SW (se quiser tratar)
             default: return null;
         }
     }
+
 
 }

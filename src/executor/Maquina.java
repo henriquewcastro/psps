@@ -67,9 +67,79 @@ public class Maquina {
                 break;
             }
 
+            case Opcode.LDX: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                cpu.X().setValor(operando);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.LDL: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                cpu.L().setValor(operando);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.LDB: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                cpu.B().setValor(operando);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.LDS: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                cpu.S().setValor(operando);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.LDT: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                cpu.T().setValor(operando);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
             case Opcode.STA: {
                 int ea = calcularEnderecoEfetivo(inst, proximoPC);
                 memoria.escreverPalavraPorByte(ea, cpu.A().getValorUnsigned());
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.STX: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                memoria.escreverPalavraPorByte(ea, cpu.X().getValorUnsigned());
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.STL: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                memoria.escreverPalavraPorByte(ea, cpu.L().getValorUnsigned());
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.STB: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                memoria.escreverPalavraPorByte(ea, cpu.B().getValorUnsigned());
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.STS: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                memoria.escreverPalavraPorByte(ea, cpu.S().getValorUnsigned());
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.STT: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                memoria.escreverPalavraPorByte(ea, cpu.T().getValorUnsigned());
                 cpu.PC().setValor(proximoPC);
                 break;
             }
@@ -137,6 +207,167 @@ public class Maquina {
                 int resultado = cpu.X().getValor() - m;
                 cpu.setCCFromCompare(resultado);
 
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.LDCH: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                int byteLido = memoria.lerByte(ea);
+
+                int a = cpu.A().getValorUnsigned();
+                a = (a & 0xFFFF00) | (byteLido & 0xFF); // mantém 16 bits altos
+                cpu.A().setValor(a);
+
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.STCH: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                int a = cpu.A().getValorUnsigned();
+                int byteA = a & 0xFF;
+                memoria.escreverByte(ea, byteA);
+
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.MUL: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                int resultado = cpu.A().getValor() * operando;
+                cpu.A().setValor(resultado);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.DIV: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                if (operando == 0) {
+                    throw new ArithmeticException("Divisão por zero em DIV");
+                }
+                int resultado = cpu.A().getValor() / operando;
+                cpu.A().setValor(resultado);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.AND: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                int resultado = cpu.A().getValorUnsigned() & (operando & 0xFFFFFF);
+                cpu.A().setValor(resultado);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.OR: {
+                int operando = lerOperandoMemoria(inst, proximoPC);
+                int resultado = cpu.A().getValorUnsigned() | (operando & 0xFFFFFF);
+                cpu.A().setValor(resultado);
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.JGT: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                if (cpu.getCC() > 0) {
+                    cpu.PC().setValor(ea);
+                } else {
+                    cpu.PC().setValor(proximoPC);
+                }
+                break;
+            }
+
+            case Opcode.JLT: {
+                int ea = calcularEnderecoEfetivo(inst, proximoPC);
+                if (cpu.getCC() < 0) {
+                    cpu.PC().setValor(ea);
+                } else {
+                    cpu.PC().setValor(proximoPC);
+                }
+                break;
+            }
+
+            case Opcode.ADDR: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                Registrador r2 = cpu.getRegistradorPorCodigo(inst.r2);
+                if (r1 != null && r2 != null) {
+                    int resultado = r2.getValor() + r1.getValor();
+                    r2.setValor(resultado);
+                }
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.SUBR: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                Registrador r2 = cpu.getRegistradorPorCodigo(inst.r2);
+                if (r1 != null && r2 != null) {
+                    int resultado = r2.getValor() - r1.getValor();
+                    r2.setValor(resultado);
+                }
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.MULR: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                Registrador r2 = cpu.getRegistradorPorCodigo(inst.r2);
+                if (r1 != null && r2 != null) {
+                    int resultado = r2.getValor() * r1.getValor();
+                    r2.setValor(resultado);
+                }
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.DIVR: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                Registrador r2 = cpu.getRegistradorPorCodigo(inst.r2);
+                if (r1 != null && r2 != null) {
+                    int divisor = r1.getValor();
+                    if (divisor == 0) {
+                        throw new ArithmeticException("Divisão por zero em DIVR");
+                    }
+                    int resultado = r2.getValor() / divisor;
+                    r2.setValor(resultado);
+                }
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.COMPR: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                Registrador r2 = cpu.getRegistradorPorCodigo(inst.r2);
+                if (r1 != null && r2 != null) {
+                    int diff = r1.getValor() - r2.getValor();
+                    cpu.setCCFromCompare(diff);
+                }
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.SHIFTL: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                int n = inst.r2 & 0x0F; // geralmente 0..15
+                if (r1 != null && n > 0) {
+                    int v = r1.getValorUnsigned();
+                    v = (v << n) & 0xFFFFFF; // mantém 24 bits
+                    r1.setValor(v);
+                }
+                cpu.PC().setValor(proximoPC);
+                break;
+            }
+
+            case Opcode.SHIFTR: {
+                Registrador r1 = cpu.getRegistradorPorCodigo(inst.r1);
+                int n = inst.r2 & 0x0F;
+                if (r1 != null && n > 0) {
+                    int v = r1.getValorUnsigned();
+                    v = v >>> n;       // deslocamento lógico à direita
+                    v &= 0xFFFFFF;     // garante 24 bits
+                    r1.setValor(v);
+                }
                 cpu.PC().setValor(proximoPC);
                 break;
             }
